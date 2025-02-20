@@ -5,9 +5,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from config import EMAIL, PASSWORD
+import logging
 
-urla = "http://selenium1py.pythonanywhere.com/ru/catalogue/category/books_2/"
-
+site = "http://selenium1py.pythonanywhere.com/ru/catalogue/category/books_2/"
+logging.basicConfig(filename="logs.log",level=logging.INFO)
 
 @pytest.fixture
 def driver():
@@ -15,10 +16,20 @@ def driver():
     yield driver
     driver.quit()
 
+@pytest.fixture
+def authorization(driver):
+    driver.get(site)
+    driver.find_element(By.ID, "login_link").click()
+    driver.find_element(By.ID, "id_login-username").send_keys(EMAIL)
+    driver.find_element(By.ID, "id_login-password").send_keys(PASSWORD)
+    driver.find_element(By.CSS_SELECTOR, "button[name='login_submit']").click()
 
-class TestAuthPage():
+
+class TestAuthPage:
+
     def test_main_page(self, driver):
-        driver.get(urla)
+        """Смок тесты"""
+        driver.get(site)
         basket = driver.find_element(By.XPATH, '//*[@id="default"]/header/div[1]/div/div[2]/span/a')
         login_button = driver.find_element(By.ID, "login_link")
         assert basket.is_displayed(), "Корзина не найдена"
@@ -26,7 +37,7 @@ class TestAuthPage():
 
     def test_registration_successful(self, driver):
         """Проверка успешной регистрации."""
-        driver.get(urla)
+        driver.get(site)
         driver.find_element(By.ID, "login_link").click()
         driver.find_element(By.ID, "id_registration-email").send_keys(EMAIL)
         driver.find_element(By.ID, "id_registration-password1").send_keys(PASSWORD)
@@ -51,14 +62,11 @@ class TestAuthPage():
                 EC.visibility_of_element_located((By.CLASS_NAME, "alert-danger")))
 
             pytest.fail(f"Регистрация не удалась. Ошибка: {error_element.text}")
+            driver.save_screenshot("test_fail_registration.png")
 
-    def test_auth(self, driver):
+    def test_auth(self, authorization, driver):
         """Проверка успешной авторизации."""
-        driver.get(urla)
-        driver.find_element(By.ID, "login_link").click()
-        driver.find_element(By.ID, "id_login-username").send_keys(EMAIL)
-        driver.find_element(By.ID, "id_login-password").send_keys(PASSWORD)
-        driver.find_element(By.CSS_SELECTOR, "button[name='login_submit']").click()
+
 
         try:
             success_login = WebDriverWait(driver, 5).until(
@@ -68,3 +76,9 @@ class TestAuthPage():
 
         except TimeoutException:
             pytest.fail("Авторизация не удалась: сообщение об успехе не появилось.")
+            driver.save_screenshot("test_fail_login.png")
+
+
+        def test_cart():
+            """Проверка доступности корзины"""
+            pass
