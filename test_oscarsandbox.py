@@ -66,7 +66,7 @@ class TestAuthPage:
 
             pytest.fail(f"Регистрация не удалась. Ошибка: {error_element.text}")
             driver.save_screenshot("test_fail_registration.png")
-
+    @pytest.mark.smoke
     def test_auth(self, authorization, driver):
         """Проверка успешной авторизации."""
 
@@ -82,6 +82,7 @@ class TestAuthPage:
 
 
 class TestCart:
+    @pytest.mark.smoke
     def test_cart(self, authorization, driver):
         """Проверка доступности корзины"""
         WebDriverWait(driver, 5).until(
@@ -99,7 +100,6 @@ class TestCart:
                                               "//*[@id='default']/div[2]/div/div/div/section/div/ol/li[1]/article/div[2]/form/button"))).click()
         item_add = WebDriverWait(driver, 5).until(
             EC.visibility_of_element_located((By.XPATH, "//*[@id='messages']/div[1]/div")))
-        time.sleep(2)
         assert "был добавлен в вашу корзину" in item_add.text, f"Товар по какой-то причине не добавлен в корзину. Ошибка: {item_add.text}"
 
         WebDriverWait(driver, 5).until(
