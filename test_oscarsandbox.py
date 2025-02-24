@@ -1,7 +1,4 @@
-import time
-
 import pytest
-
 from selenium import webdriver
 from selenium.common import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
@@ -12,7 +9,7 @@ from config import EMAIL, PASSWORD
 site = "http://selenium1py.pythonanywhere.com/ru/catalogue/category/books_2/"
 
 
-@pytest.fixture
+@pytest.fixture(scope="function", autouse=True)
 def driver():
     driver = webdriver.Chrome()
     yield driver
@@ -66,6 +63,7 @@ class TestAuthPage:
 
             pytest.fail(f"Регистрация не удалась. Ошибка: {error_element.text}")
             driver.save_screenshot("test_fail_registration.png")
+
     @pytest.mark.smoke
     def test_auth(self, authorization, driver):
         """Проверка успешной авторизации."""
@@ -90,9 +88,7 @@ class TestCart:
         cart = driver.find_element(By.CLASS_NAME, "page-header>h1")
         assert "Корзина" == cart.text
 
-    def test_add_item_in_cart(self, authorization, driver):
-        """Проверка добавления 1 товара в корзину"""
-
+    def add_to_cart(self, authorization, driver):
         WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.CLASS_NAME, "dropdown-submenu"))).click()
 
         WebDriverWait(driver, 5).until(
@@ -104,6 +100,24 @@ class TestCart:
 
         WebDriverWait(driver, 5).until(
             EC.visibility_of_element_located((By.XPATH, "//*[@id='default']/header/div[1]/div/div[2]/span/a"))).click()
+
+    def add_item_to_cart(self, driver):
+        WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.CLASS_NAME, "dropdown-submenu"))).click()
+
+        WebDriverWait(driver, 5).until(
+            EC.visibility_of_element_located((By.XPATH,
+                                              "//*[@id='default']/div[2]/div/div/div/section/div/ol/li[1]/article/div[2]/form/button"))).click()
+        item_add = WebDriverWait(driver, 5).until(
+            EC.visibility_of_element_located((By.XPATH, "//*[@id='messages']/div[1]/div")))
+        assert "был добавлен в вашу корзину" in item_add.text, f"Товар по какой-то причине не добавлен в корзину. Ошибка: {item_add.text}"
+
+        WebDriverWait(driver, 5).until(
+            EC.visibility_of_element_located((By.XPATH, "//*[@id='default']/header/div[1]/div/div[2]/span/a"))).click()
+
+    def test_add_item_to_cart(self, authorization, driver):
+        """Проверка добавления 1 товара в корзину"""
+
+        self.add_item_to_cart(driver)
 
         button_for_buy = WebDriverWait(driver, 5).until(
             EC.visibility_of_element_located(
