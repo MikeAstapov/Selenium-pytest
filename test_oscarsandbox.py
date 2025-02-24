@@ -88,19 +88,6 @@ class TestCart:
         cart = driver.find_element(By.CLASS_NAME, "page-header>h1")
         assert "Корзина" == cart.text
 
-    def add_to_cart(self, authorization, driver):
-        WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.CLASS_NAME, "dropdown-submenu"))).click()
-
-        WebDriverWait(driver, 5).until(
-            EC.visibility_of_element_located((By.XPATH,
-                                              "//*[@id='default']/div[2]/div/div/div/section/div/ol/li[1]/article/div[2]/form/button"))).click()
-        item_add = WebDriverWait(driver, 5).until(
-            EC.visibility_of_element_located((By.XPATH, "//*[@id='messages']/div[1]/div")))
-        assert "был добавлен в вашу корзину" in item_add.text, f"Товар по какой-то причине не добавлен в корзину. Ошибка: {item_add.text}"
-
-        WebDriverWait(driver, 5).until(
-            EC.visibility_of_element_located((By.XPATH, "//*[@id='default']/header/div[1]/div/div[2]/span/a"))).click()
-
     def add_item_to_cart(self, driver):
         WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.CLASS_NAME, "dropdown-submenu"))).click()
 
