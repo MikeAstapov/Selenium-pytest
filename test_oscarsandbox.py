@@ -7,7 +7,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 
-
 from config import EMAIL, PASSWORD, URL
 
 
@@ -130,3 +129,19 @@ class TestCart:
         final_step = driver.find_element(By.CLASS_NAME, "sub-header")
         assert "Введите параметры платежа" in final_step.text, f"Что-то пошло не так. Возможно не было заполнено обязательное поле"
 
+    def test_clear_cart(self, authorization, driver):
+        """Очистка корзины от товаров"""
+        try:
+            WebDriverWait(driver, 5).until(
+                EC.visibility_of_element_located(
+                    (By.XPATH, "//*[@id='default']/header/div[1]/div/div[2]/span/a"))).click()
+            input_field = WebDriverWait(driver, 5).until(
+                (EC.visibility_of_element_located((By.ID, "id_form-0-quantity"))))
+            input_field.clear()
+            input_field.send_keys("0")
+            driver.find_element(By.CSS_SELECTOR, "button[data-loading-text='Обновление...']").click()
+            update_cart = driver.find_element(By.CSS_SELECTOR, ".alertinner p:first-child")
+            assert "Ваша корзина теперь пуста" in update_cart.text, "Что-то пошло не так, и корзина не пуста"
+        except TimeoutException:
+
+            pytest.fail("Корзина была пуста!")
