@@ -3,6 +3,7 @@ import time
 import pytest
 from selenium import webdriver
 from selenium.common import TimeoutException
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
@@ -12,6 +13,8 @@ from config import EMAIL, PASSWORD, URL
 
 @pytest.fixture(scope="function", autouse=True)
 def driver():
+    options = Options()
+    options.add_argument('--ignore-certificate-errors')
     driver = webdriver.Chrome()
     yield driver
     driver.quit()
@@ -143,5 +146,4 @@ class TestCart:
             update_cart = driver.find_element(By.CSS_SELECTOR, ".alertinner p:first-child")
             assert "Ваша корзина теперь пуста" in update_cart.text, "Что-то пошло не так, и корзина не пуста"
         except TimeoutException:
-
             pytest.fail("Корзина была пуста!")
