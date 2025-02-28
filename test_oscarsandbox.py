@@ -1,4 +1,5 @@
-import time
+from http.client import responses
+from wsgiref.validate import assert_
 
 import pytest
 from selenium import webdriver
@@ -147,3 +148,22 @@ class TestCart:
             assert "Ваша корзина теперь пуста" in update_cart.text, "Что-то пошло не так, и корзина не пуста"
         except TimeoutException:
             pytest.fail("Корзина была пуста!")
+
+
+class TestOtherFunctions:
+    @pytest.mark.smoke
+    def test_search(self, driver):
+        driver.get(URL)
+        """Проверка функции поиска по сайту"""
+        WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.ID, "id_q"))).send_keys(
+            "work")
+        driver.find_element(By.XPATH, "//*[@id='default']/header/div[2]/div/div[2]/form/input").click()
+        try:
+            response = WebDriverWait(driver, 5).until(
+                EC.visibility_of_element_located((By.CLASS_NAME, "product_price")))
+
+            assert response, "Что-то пошло не так!"
+        except TimeoutException:
+            response_negative = WebDriverWait(driver, 5).until(
+                EC.visibility_of_element_located((By.XPATH, "//*[@id='default']/div[2]/div/div/div/form/p")))
+            assert response_negative, "Что-то пошло не так!"
