@@ -157,7 +157,7 @@ class TestOtherFunctions:
         """Проверка функции поиска по сайту"""
         WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.ID, "id_q"))).send_keys(
             "work")
-        driver.find_element(By.XPATH, "//*[@id='default']/header/div[2]/div/div[2]/form/input").click()
+        driver.find_element(By.CSS_SELECTOR, ".btn.btn-default[value='Найти']").click()
         try:
             response = WebDriverWait(driver, 5).until(
                 EC.visibility_of_element_located((By.CLASS_NAME, "product_price")))
