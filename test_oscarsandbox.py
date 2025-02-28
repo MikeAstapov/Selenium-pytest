@@ -161,9 +161,6 @@ class TestOtherFunctions:
         try:
             response = WebDriverWait(driver, 5).until(
                 EC.visibility_of_element_located((By.CLASS_NAME, "product_price")))
-
-            assert response, "Что-то пошло не так!"
+            assert response, "Что-то пошло не так в позитивном сценарии!"
         except TimeoutException:
-            response_negative = WebDriverWait(driver, 5).until(
-                EC.visibility_of_element_located((By.XPATH, "//*[@id='default']/div[2]/div/div/div/form/p")))
-            assert response_negative, "Что-то пошло не так!"
+            pytest.fail("Поиск отработал с ошибкой")
