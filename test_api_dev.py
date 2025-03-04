@@ -15,7 +15,7 @@ def create_obj_id():
     }
     response = requests.post('https://api.restful-api.dev/objects', json=payload).json()
     yield response["id"]
-    # requests.delete('https://api.restful-api.dev/objects', json=response)
+    requests.delete('https://api.restful-api.dev/objects', json=response)
 
 
 @pytest.mark.smoke
