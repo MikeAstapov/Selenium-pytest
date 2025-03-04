@@ -54,11 +54,10 @@ def test_put_obj(create_obj_id):
         }
     }
     response = requests.put(f'https://api.restful-api.dev/objects/{create_obj_id}', json=payload).json()
-    print(response)
+
     assert payload["name"] == response["name"]
     assert payload["data"]["CPU model"] == response["data"]["CPU model"]
     assert payload["data"]["Hard disk size"] == response["data"]["Hard disk size"]
-
 
 
 def test_delete_obj(create_obj_id):
