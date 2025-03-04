@@ -15,7 +15,7 @@ def create_obj_id():
     }
     response = requests.post('https://api.restful-api.dev/objects', json=payload).json()
     yield response["id"]
-    requests.delete('https://api.restful-api.dev/objects', json=response)
+    # requests.delete('https://api.restful-api.dev/objects', json=response)
 
 
 @pytest.mark.smoke
@@ -58,6 +58,14 @@ def test_put_obj(create_obj_id):
     assert payload["name"] == response["name"]
     assert payload["data"]["CPU model"] == response["data"]["CPU model"]
     assert payload["data"]["Hard disk size"] == response["data"]["Hard disk size"]
+
+
+def test_patch_obj(create_obj_id):
+    payload = {
+        "name": "TEST PATCH METHOD",
+    }
+    response = requests.patch(f'https://api.restful-api.dev/objects/{create_obj_id}', json=payload).json()
+    assert payload["name"] == response["name"]
 
 
 def test_delete_obj(create_obj_id):
