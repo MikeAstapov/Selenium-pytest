@@ -1,3 +1,4 @@
+from http.client import responses
 
 import requests
 import pytest
@@ -5,15 +6,17 @@ import pytest
 from config import USERNAME, PASSWORD_booker, URL_BOOKS, HEADERS
 
 
-@pytest.fixture()
-def auth_func():
+def test_auth_func():
     data = {
         "username": USERNAME,
         "password": PASSWORD_booker
     }
     response = requests.post("https://restful-booker.herokuapp.com/auth", data=data)
-    token = response.json()['token']
-    yield token
+    try:
+        token = response.json()['token']
+        assert response.status_code == 200 and token
+    except KeyError:
+        pytest.fail(f"Ошибка авторизации : {response.json()["reason"]}")
 
 
 @pytest.fixture()
@@ -61,7 +64,8 @@ def test_patch_book(create_book):
     data = {"firstname": "TEST NAME",
             "lastname": "TEST SURNAME"}
     response = requests.patch(f"{URL_BOOKS}/booking/{create_book}", json=data, headers=HEADERS).json()
-    assert response['firstname'] == 'TEST NAME' and response['lastname'] == 'TEST SURNAME', "Частичное обновление данных вызвало ошибку"
+    assert response['firstname'] == 'TEST NAME' and response[
+        'lastname'] == 'TEST SURNAME', "Частичное обновление данных вызвало ошибку"
 
 
 def test_delete_book(create_book):
@@ -69,4 +73,3 @@ def test_delete_book(create_book):
     print(create_book)
     response = requests.get(f"{URL_BOOKS}/booking/{create_book}")
     assert response.status_code == 404, f"Запись не была удалена. Id книги {create_book}"
-
