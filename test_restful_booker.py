@@ -40,7 +40,7 @@ def test_get_booking_ids(create_book):
         "totalprice"] == 999, f"Id {create_book} не найден"
 
 
-def test_update_book(create_book):
+def test_put_book(create_book):
     data = {
         "firstname": "James",
         "lastname": "Brown",
@@ -62,3 +62,11 @@ def test_patch_book(create_book):
             "lastname": "TEST SURNAME"}
     response = requests.patch(f"{URL_BOOKS}/booking/{create_book}", json=data, headers=HEADERS).json()
     assert response['firstname'] == 'TEST NAME' and response['lastname'] == 'TEST SURNAME', "Частичное обновление данных вызвало ошибку"
+
+
+def test_delete_book(create_book):
+    requests.delete(f"https://restful-booker.herokuapp.com/booking/{create_book}", headers=HEADERS)
+    print(create_book)
+    response = requests.get(f"{URL_BOOKS}/booking/{create_book}")
+    assert response.status_code == 404, f"Запись не была удалена. Id книги {create_book}"
+
