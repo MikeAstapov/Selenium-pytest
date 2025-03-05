@@ -1,9 +1,8 @@
-from http.client import responses
-
 import requests
 import pytest
 
 from config import USERNAME, PASSWORD_booker, URL_BOOKS, HEADERS
+
 
 @pytest.fixture()
 def create_book():
@@ -22,6 +21,7 @@ def create_book():
     yield response["bookingid"]
     requests.delete(f"https://restful-booker.herokuapp.com/booking/{response['bookingid']}", headers=HEADERS)
 
+
 class TestApiMethods():
     def test_auth_func(self):
         data = {
@@ -35,15 +35,10 @@ class TestApiMethods():
         except KeyError:
             pytest.fail(f"Ошибка авторизации : {response.json()["reason"]}")
 
-
-
-
-
     def test_get_booking_ids(self, create_book):
         response = requests.get(f"{URL_BOOKS}/booking/{create_book}").json()
         assert response["firstname"] == "Michael" and response["lastname"] == "Astapov" and response[
             "totalprice"] == 999, f"Id {create_book} не найден"
-
 
     def test_put_book(self, create_book):
         data = {
@@ -61,14 +56,12 @@ class TestApiMethods():
         assert response['firstname'] == 'James' and response['lastname'] == 'Brown' and response[
             'totalprice'] == 111, "Обновление данных вызвало ошибку"
 
-
     def test_patch_book(self, create_book):
         data = {"firstname": "TEST NAME",
                 "lastname": "TEST SURNAME"}
         response = requests.patch(f"{URL_BOOKS}/booking/{create_book}", json=data, headers=HEADERS).json()
         assert response['firstname'] == 'TEST NAME' and response[
             'lastname'] == 'TEST SURNAME', "Частичное обновление данных вызвало ошибку"
-
 
     def test_delete_book(self, create_book):
         requests.delete(f"https://restful-booker.herokuapp.com/booking/{create_book}", headers=HEADERS)
