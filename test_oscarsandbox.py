@@ -1,6 +1,3 @@
-from http.client import responses
-from wsgiref.validate import assert_
-
 import pytest
 from selenium import webdriver
 from selenium.common import TimeoutException
@@ -8,15 +5,17 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+from config import EMAIL, PASSWORD
 
-from config import EMAIL, PASSWORD, URL
+URL = "http://selenium1py.pythonanywhere.com/ru/catalogue/category/books_2/"
 
 
 @pytest.fixture(scope="function", autouse=True)
 def driver():
     options = Options()
     options.add_argument('--ignore-certificate-errors')
-    driver = webdriver.Chrome()
+    options.add_argument('--headless=new') # Закомментировать строку, если хотите видеть открытия браузера.
+    driver = webdriver.Chrome(options=options)
     yield driver
     driver.quit()
 
