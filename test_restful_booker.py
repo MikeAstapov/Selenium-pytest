@@ -1,7 +1,7 @@
 import requests
 import pytest
 
-from config import USERNAME, PASSWORD_booker, URL_BOOKS, HEADERS, data_create_method, data_put_method
+from config import USERNAME, PASSWORD_booker, URL_BOOKS, HEADERS, data_create_method, data_put_method, data_patch_method
 
 
 @pytest.fixture(scope="module")
@@ -67,24 +67,20 @@ class TestPutMethods:
 class TestPatchMethods:
 
     def test_patch_book_positive(self, create_book):
-        data = {"firstname": "TEST NAME",
-                "lastname": "TEST SURNAME"}
-        response = requests.patch(f"{URL_BOOKS}/booking/{create_book}", json=data, headers=HEADERS).json()
+        response = requests.patch(f"{URL_BOOKS}/booking/{create_book}", json=data_patch_method, headers=HEADERS).json()
         assert response['firstname'] == 'TEST NAME' and response[
             'lastname'] == 'TEST SURNAME', "Частичное обновление данных вызвало ошибку"
 
     def test_patch_book_without_token_negative(self, create_book):
         # Тест без HEADERS, в которых есть bearer токен
-        data = {"firstname": "TEST NAME",
-                "lastname": "TEST SURNAME"}
-        response = requests.patch(f"{URL_BOOKS}/booking/{create_book}", json=data)
+
+        response = requests.patch(f"{URL_BOOKS}/booking/{create_book}", json=data_patch_method)
         assert response.status_code == 403
 
     def test_patch_book_without_id_negative(self, create_book):
         # Тест на изменение несуществующей записи с id=999999999999
-        data = {"firstname": "TEST NAME",
-                "lastname": "TEST SURNAME"}
-        response = requests.patch(f"{URL_BOOKS}/booking/999999999999", json=data, headers=HEADERS)
+
+        response = requests.patch(f"{URL_BOOKS}/booking/999999999999", json=data_patch_method, headers=HEADERS)
         assert response.status_code == 405, "Успешный ответ об изменении несуществующей записи"
 
 
