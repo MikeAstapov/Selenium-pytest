@@ -33,6 +33,13 @@ class TestPostMethods:
         except KeyError:
             pytest.fail(f"Ошибка авторизации : {response.json()["reason"]}")
 
+    def test_auth_func_negative(self):
+        data = {
+            "username": "test",
+            "password": "PASSWORD_booker"
+        }
+        response = requests.post("https://restful-booker.herokuapp.com/auth", data=data)
+        assert response.json()["reason"] == "Bad credentials", "Успешный вход при неверных логин\пароле"
 
 class TestPutMethods:
 
