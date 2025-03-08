@@ -1,3 +1,14 @@
+import pytest
+import requests
+
+
+@pytest.fixture(scope="module")
+def create_book():
+    response = requests.post("https://restful-booker.herokuapp.com/booking", json=data_create_method).json()
+    yield response["bookingid"]
+    requests.delete(f"https://restful-booker.herokuapp.com/booking/{response['bookingid']}", headers=HEADERS)
+
+
 URL_BOOKS = "https://restful-booker.herokuapp.com"
 
 HEADERS = {
