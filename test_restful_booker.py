@@ -37,16 +37,17 @@ class TestPostMethods:
 class TestPutMethods:
 
     def test_put_book_positive(self, create_book):
-
         response = requests.put(f"{URL_BOOKS}/booking/{create_book}", json=data_put_method, headers=HEADERS).json()
         assert response['firstname'] == 'James' and response['lastname'] == 'Brown' and response[
             'totalprice'] == 111, "Обновление данных вызвало ошибку"
 
     def test_put_book_without_id_negative(self, create_book):
-        response = requests.put(f"{URL_BOOKS}/booking/999999999999999", json=data_put_method, headers=HEADERS)
+        # Тест удаление несуществующей записи с id=999999999999
+        response = requests.put(f"{URL_BOOKS}/booking/999999999999", json=data_put_method, headers=HEADERS)
         assert response.status_code == 405, "Успешный ответ об удалении несуществующей записи"
 
     def test_put_book_without_token_negative(self, create_book):
+        # Тест без HEADERS, в которых есть bearer токен
         response = requests.put(f"{URL_BOOKS}/booking/{create_book}", json=data_put_method)
         assert response.status_code == 403, "Успешное изменение записи без прав доступа"
 
@@ -59,6 +60,20 @@ class TestPatchMethods:
         response = requests.patch(f"{URL_BOOKS}/booking/{create_book}", json=data, headers=HEADERS).json()
         assert response['firstname'] == 'TEST NAME' and response[
             'lastname'] == 'TEST SURNAME', "Частичное обновление данных вызвало ошибку"
+
+    def test_patch_book_without_token_negative(self, create_book):
+        # Тест без HEADERS, в которых есть bearer токен
+        data = {"firstname": "TEST NAME",
+                "lastname": "TEST SURNAME"}
+        response = requests.patch(f"{URL_BOOKS}/booking/{create_book}", json=data)
+        assert response.status_code == 403
+
+    def test_patch_book_without_id_negative(self, create_book):
+        # Тест на изменение несуществующей записи с id=999999999999
+        data = {"firstname": "TEST NAME",
+                "lastname": "TEST SURNAME"}
+        response = requests.patch(f"{URL_BOOKS}/booking/999999999999", json=data, headers=HEADERS)
+        assert response.status_code == 405, "Успешный ответ об изменении несуществующей записи"
 
 
 class TestDeleteMethods:
