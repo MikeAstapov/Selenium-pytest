@@ -18,6 +18,10 @@ class TestGetMethods:
         assert response["firstname"] == "Michael" and response["lastname"] == "Astapov" and response[
             "totalprice"] == 999, f"Id {create_book} не найден"
 
+    def test_get_ping(self):
+        response = requests.get(f"{URL_BOOKS}/ping")
+        assert response.status_code == 201, "Сервер не отвечает"
+
 
 class TestPostMethods:
 
@@ -40,6 +44,7 @@ class TestPostMethods:
         }
         response = requests.post("https://restful-booker.herokuapp.com/auth", data=data)
         assert response.json()["reason"] == "Bad credentials", "Успешный вход при неверных логин\пароле"
+
 
 class TestPutMethods:
 
